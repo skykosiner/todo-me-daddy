@@ -69,6 +69,7 @@ function get_todo_comments()
     -- Each time we run this, we need to clear the table
     -- This is because we are running this function multiple times
     -- and we don't want to add the same comments multiple times
+    -- TODO: test
     local todos = {}
 
     for k,v in pairs(fileTable) do
@@ -77,13 +78,15 @@ function get_todo_comments()
             local lines = lines_from(file)
             for k,v in pairs(lines) do
                 if string.find(v, "TODO") then
-                    -- Remove any whitespace from the start of the line
-                    v = string.gsub(v, "^%s*", "")
-                    -- Add a space between the line number and the comment
-                    v = string.gsub(v, "^(%d+)", "%1 ")
-                    local todoComment = "%s %s"
-                    v = string.format(todoComment, v, file)
-                    table.insert(todos, v)
+                    if string.find(v, "#") or string.find(v, "//") or string.find(v, "/*") or string.find(v, "*/") or string.find(v, "--") or string.find(v, "\"") then
+                        -- Remove any whitespace from the start of the line
+                        v = string.gsub(v, "^%s*", "")
+                        -- Add a space between the line number and the comment
+                        v = string.gsub(v, "^(%d+)", "%1 ")
+                        local todoComment = "%s %s"
+                        v = string.format(todoComment, v, file)
+                        table.insert(todos, v)
+                    end
                 end
             end
         end

@@ -13,6 +13,11 @@ What this plugin does is a few different options:
 
 **Right now the plugin only outputs to telescope, but from there you can output to a quickfix list**
 
+
+## Current bugs
+* If your code has the word TODO and it is not a comment the plugin will still find it
+* Does not work all to well with git worktree's at moment, if you're using [theprimeagens]() plugin to hop between worktrees
+
 ## Warninng
 This is my first ever neovim plugin, and I code this in under 2 hours. So this may be a little rough around the edges
 
