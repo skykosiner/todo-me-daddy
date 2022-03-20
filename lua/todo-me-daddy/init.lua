@@ -100,7 +100,7 @@ end
 
 M.jump_to_todo = function(todo)
     lineNum = string.match(todo, "%d+")
-    todo = string.sub(todo, string.find(todo, "/home/yoni/") + 1)
+    todo = string.sub(todo, string.find(todo, homeDir) + 1)
     todo = "/" .. todo
     vim.cmd("e " .. todo)
     print(lineNum)
