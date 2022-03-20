@@ -69,7 +69,6 @@ function get_todo_comments()
     -- Each time we run this, we need to clear the table
     -- This is because we are running this function multiple times
     -- and we don't want to add the same comments multiple times
-    -- TODO: test
     local todos = {}
 
     for k,v in pairs(fileTable) do
@@ -78,14 +77,29 @@ function get_todo_comments()
             local lines = lines_from(file)
             for k,v in pairs(lines) do
                 if string.find(v, "TODO") then
-                    --TODO: Only get TODOs that are really todos
-                    -- Remove any whitespace from the start of the line
+                    --TODO: test
                     v = string.gsub(v, "^%s*", "")
-                    -- Add a space between the line number and the comment
                     v = string.gsub(v, "^(%d+)", "%1 ")
-                    local todoComment = "%s %s"
-                    v = string.format(todoComment, v, file)
-                    table.insert(todos, v)
+                    v = string.gsub(v, "^(%d+)%s*", "%1 ")
+
+                    -- Check that v starts with a number then a space then a --
+                    -- Ignore the number and the space and then check for the --
+                    local stringWithNoNumber = string.sub(v, 3)
+                    -- Remove the whitespace at the start of the string
+                    stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
+                    if string.find(stringWithNoNumber, "^--TODO:") then
+                        local todoComment = "%s %s"
+                        v = string.format(todoComment, v, file)
+                        table.insert(todos, v)
+                    elseif string.find(stringWithNoNumber, "^//TODO") then
+                        local todoComment = "%s %s"
+                        v = string.format(todoComment, v, file)
+                        table.insert(todos, v)
+                    elseif string.find(stringWithNoNumber, "^#TODO:") then
+                        local todoComment = "%s %s"
+                        v = string.format(todoComment, v, file)
+                        table.insert(todos, v)
+                    end
                 end
             end
         end
@@ -101,11 +115,10 @@ M.main = function()
 end
 
 M.jump_to_todo = function(todo)
-    lineNum = string.match(todo, "%d+")
+    local lineNum = string.match(todo, "%d+")
     todo = string.sub(todo, string.find(todo, homeDir) + 1)
     todo = "/" .. todo
     vim.cmd("e " .. todo)
-    print(lineNum)
     vim.cmd(":" .. lineNum)
 end
 
