@@ -77,7 +77,6 @@ function get_todo_comments()
             local lines = lines_from(file)
             for k,v in pairs(lines) do
                 if string.find(v, "TODO") then
-                    --TODO: test
                     v = string.gsub(v, "^%s*", "")
                     v = string.gsub(v, "^(%d+)", "%1 ")
                     v = string.gsub(v, "^(%d+)%s*", "%1 ")
@@ -87,18 +86,27 @@ function get_todo_comments()
                     local stringWithNoNumber = string.sub(v, 3)
                     -- Remove the whitespace at the start of the string
                     stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
-                    if string.find(stringWithNoNumber, "^--TODO:") then
-                        local todoComment = "%s %s"
-                        v = string.format(todoComment, v, file)
-                        table.insert(todos, v)
-                    elseif string.find(stringWithNoNumber, "^//TODO") then
-                        local todoComment = "%s %s"
-                        v = string.format(todoComment, v, file)
-                        table.insert(todos, v)
-                    elseif string.find(stringWithNoNumber, "^#TODO:") then
-                        local todoComment = "%s %s"
-                        v = string.format(todoComment, v, file)
-                        table.insert(todos, v)
+                    -- Check the filetype using the file extension
+                    local filetype = string.match(file, "%.([^.]+)$")
+
+                    if filetype == "lua" then
+                        if string.find(stringWithNoNumber, "^--TODO") or string.find(stringWithNoNumber, "^-- TODO") then
+                            local todoComment = "%s %s"
+                            v = string.format(todoComment, v, file)
+                            table.insert(todos, v)
+                        end
+                    elseif filetype == "js" or filetype == "ts" or filetype == "go" or filetype == "c" then
+                        if string.find(stringWithNoNumber, "^//TODO") or string.find(stringWithNoNumber, "^// TODO") then
+                            local todoComment = "%s %s"
+                            v = string.format(todoComment, v, file)
+                            table.insert(todos, v)
+                        end
+                    elseif filetype == "sh" or filetype == "py" then
+                        if string.find(stringWithNoNumber, "^#TODO")  or string.find(stringWithNoNumber, "^# TODO") then
+                            local todoComment = "%s %s"
+                            v = string.format(todoComment, v, file)
+                            table.insert(todos, v)
+                        end
                     end
                 end
             end
@@ -120,6 +128,10 @@ M.jump_to_todo = function(todo)
     todo = "/" .. todo
     vim.cmd("e " .. todo)
     vim.cmd(":" .. lineNum)
+end
+
+M.quick_fix_list = function()
+    M.main()
 end
 
 return M
