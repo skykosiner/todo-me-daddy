@@ -1,4 +1,4 @@
-local currentDir = vim.fn.getcwd()
+-- Relad the current working dir each time this is run
 local homeDir = os.getenv("HOME")
 local fileTable = {}
 
@@ -49,19 +49,13 @@ end
 
 function lines_from(file)
     local lines = {}
-    -- Read the file and split it by new line, include the line number in the table
+    -- Read each file and split by new line, and insert it into the table fileTable (include line numbers)
     for line in io.lines(file) do
         local lineNum = #lines + 1
         table.insert(lines, lineNum .. line)
-        -- lines[lineNum] = line
     end
-
-    -- for line in io.lines(file) do
-    --   lines[#lines + 1] = line
-    -- end
     return lines
 end
-
 
 local M = {}
 
@@ -73,17 +67,19 @@ function get_todo_comments()
 
     for k,v in pairs(fileTable) do
         local file = v
+        -- Make sure that the file is not a dir
         if file_not_dir(file) then
             local lines = lines_from(file)
             for k,v in pairs(lines) do
+                --TODO: Clean this up, it's ugly as hell
                 if string.find(v, "TODO") then
                     v = string.gsub(v, "^%s*", "")
                     v = string.gsub(v, "^(%d+)", "%1 ")
                     v = string.gsub(v, "^(%d+)%s*", "%1 ")
 
                     -- Check that v starts with a number then a space then a --
-                    -- Ignore the number and the space and then check for the --
-                    local stringWithNoNumber = string.sub(v, 3)
+                    -- Remove the number from the string
+                    local stringWithNoNumber = string.gsub(v, "^(%d+)%s*", "")
                     -- Remove the whitespace at the start of the string
                     stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
                     -- Check the filetype using the file extension
@@ -116,8 +112,13 @@ function get_todo_comments()
     return todos
 end
 
-M.main = function()
+function get_current_dir()
+    return vim.fn.getcwd()
+end
+
+M.get_todo = function()
     fileTable = {}
+    currentDir = get_current_dir()
     files_from_dir(currentDir)
     return get_todo_comments()
 end
@@ -130,6 +131,8 @@ M.jump_to_todo = function(todo)
     vim.cmd(":" .. lineNum)
 end
 
+
+--TODO: Add a way to jump to the file and line number, with quick fixclist
 M.quick_fix_list = function()
     M.main()
 end
