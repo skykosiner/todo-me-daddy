@@ -78,15 +78,14 @@ function get_todo_comments()
             local lines = lines_from(file)
             for k,v in pairs(lines) do
                 if string.find(v, "TODO") then
-                    if string.find(v, "#") or string.find(v, "//") or string.find(v, "/*") or string.find(v, "*/") or string.find(v, "--") or string.find(v, "\"") then
-                        -- Remove any whitespace from the start of the line
-                        v = string.gsub(v, "^%s*", "")
-                        -- Add a space between the line number and the comment
-                        v = string.gsub(v, "^(%d+)", "%1 ")
-                        local todoComment = "%s %s"
-                        v = string.format(todoComment, v, file)
-                        table.insert(todos, v)
-                    end
+                    --TODO: Only get TODOs that are really todos
+                    -- Remove any whitespace from the start of the line
+                    v = string.gsub(v, "^%s*", "")
+                    -- Add a space between the line number and the comment
+                    v = string.gsub(v, "^(%d+)", "%1 ")
+                    local todoComment = "%s %s"
+                    v = string.format(todoComment, v, file)
+                    table.insert(todos, v)
                 end
             end
         end

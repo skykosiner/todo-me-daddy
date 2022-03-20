@@ -11,7 +11,7 @@ What this plugin does is a few different options:
 1. Output every to-do found to a quickfix list
 2. Output every to-do found to telescope
 
-**Right now the plugin only outputs to telescope, but from there you can output to a quickfix list**
+**Right now the plugin only outputs to telescope**
 
 
 ## Current bugs
