@@ -1,0 +1,15 @@
+{
+    "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+    "Lua.diagnostics.disable": [
+        "unused-local",
+        "redefined-local"
+    ],
+    "Lua.diagnostics.globals": [
+        "vim",
+        "files_from_dir",
+        "get_todo_comments",
+        "currentDir",
+        "lines_from",
+        "get_current_dir"
+    ]
+}

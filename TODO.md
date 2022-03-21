@@ -1,1 +1,2 @@
 - [ ] Clean up this code
+- [ ] Igonre folders opition with let

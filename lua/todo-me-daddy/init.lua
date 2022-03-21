@@ -1,5 +1,5 @@
--- Relad the current working dir each time this is run
 local homeDir = os.getenv("HOME")
+
 local fileTable = {}
 
 local utils = require("todo-me-daddy.utils")
@@ -88,6 +88,18 @@ function get_todo_comments()
                             v = string.format(todoComment, v, file)
                             table.insert(todos, v)
                         end
+                    elseif filetype == "" or filetype == nil then
+                        if string.find(stringWithNoNumber, "^#TODO") or string.find(stringWithNoNumber, "^# TODO") then
+                            local todoComment = "%s %s"
+                            v = string.format(todoComment, v, file)
+                            table.insert(todos, v)
+                        end
+                    else
+                        if string.find(stringWithNoNumber, "^//TODO") or string.find(stringWithNoNumber, "^// TODO") then
+                            local todoComment = "%s %s"
+                            v = string.format(todoComment, v, file)
+                            table.insert(todos, v)
+                        end
                     end
                 end
             end
@@ -103,7 +115,7 @@ end
 
 M.get_todo = function()
     fileTable = {}
-    currentDir = get_current_dir()
+    local currentDir = get_current_dir()
     files_from_dir(currentDir)
     return get_todo_comments()
 end
@@ -116,10 +128,8 @@ M.jump_to_todo = function(todo)
     vim.cmd(":" .. lineNum)
 end
 
-
 --TODO: Add a way to jump to the file and line number, with quckfixlist
 M.quick_fix_list = function()
-    M.main()
 end
 
 return M
