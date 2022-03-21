@@ -2,6 +2,8 @@
 local homeDir = os.getenv("HOME")
 local fileTable = {}
 
+local utils = require("todo-me-daddy.utils")
+
 function os.capture(cmd, raw)
   local f = assert(io.popen(cmd, 'r'))
   local s = assert(f:read('*a'))
@@ -11,26 +13,6 @@ function os.capture(cmd, raw)
   s = string.gsub(s, '%s+$', '')
   s = string.gsub(s, '[\n\r]+', ' ')
   return s
-end
-
---- Check if a file or directory exists in this path
-function exists(file)
-   local ok, err, code = os.rename(file, file)
-   if not ok then
-      if code == 13 then
-         -- Permission denied, but it exists
-         return true
-      end
-   end
-   return ok, err
-end
-
-function file_not_dir(name)
-    if exists(name .. "/") then
-        return false
-    else
-        return true
-    end
 end
 
 function files_from_dir(dir)
@@ -68,7 +50,7 @@ function get_todo_comments()
     for k,v in pairs(fileTable) do
         local file = v
         -- Make sure that the file is not a dir
-        if file_not_dir(file) then
+        if utils:file_not_dir(file) then
             local lines = lines_from(file)
             for k,v in pairs(lines) do
                 --TODO: Clean this up, it's ugly as hell
@@ -84,6 +66,9 @@ function get_todo_comments()
                     stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
                     -- Check the filetype using the file extension
                     local filetype = string.match(file, "%.([^.]+)$")
+
+                    --TODO: implent this
+                    -- local commentString = vim.cmd("echo &commentstring")
 
                     if filetype == "lua" then
                         if string.find(stringWithNoNumber, "^--TODO") or string.find(stringWithNoNumber, "^-- TODO") then
@@ -132,7 +117,7 @@ M.jump_to_todo = function(todo)
 end
 
 
---TODO: Add a way to jump to the file and line number, with quick fixclist
+--TODO: Add a way to jump to the file and line number, with quckfixlist
 M.quick_fix_list = function()
     M.main()
 end
