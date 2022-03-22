@@ -19,6 +19,10 @@ function utils:file_not_dir(name)
     end
 end
 
+-- TODO: use this bad boy instead of the scuffed way of doing it
+-- Reason I can't do this now, is beacuse it won't let me pass the table in
+-- like that, and I need to return it to the table in order to have telescope
+-- have it later
 function utils:add_todo_to_table(file, todo, table)
     local todoComment = "%s %s"
     todo = string.format(todoComment, todo, file)

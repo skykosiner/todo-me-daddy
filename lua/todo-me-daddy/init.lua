@@ -130,6 +130,8 @@ end
 
 --TODO: Add a way to jump to the file and line number, with quckfixlist
 M.quick_fix_list = function()
+    -- Add it to the quickfix list gurlll
+    local todos = M.get_todo()
 end
 
 return M

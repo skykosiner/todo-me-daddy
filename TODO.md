@@ -1,2 +1,3 @@
 - [ ] Clean up this code
 - [ ] Igonre folders opition with let
+- [ ] Add an option to get to do's from markdown files with - [ ]
