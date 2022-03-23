@@ -1,7 +1,9 @@
+local actions = require('telescope.actions')
+local methods = require('todo-me-daddy.methods')
+local settings = require('todo-me-daddy.settings')
+
 local homeDir = os.getenv("HOME")
-
 local fileTable = {}
-
 local utils = require("todo-me-daddy.utils")
 
 function os.capture(cmd, raw)
@@ -39,7 +41,9 @@ function lines_from(file)
     return lines
 end
 
-local M = {}
+local M = {
+    setup = methods.Setup,
+}
 
 function get_todo_comments()
     -- Each time we run this, we need to clear the table
@@ -53,20 +57,26 @@ function get_todo_comments()
         if utils:file_not_dir(file) then
             local lines = lines_from(file)
             for k,v in pairs(lines) do
+                v = string.gsub(v, "^%s*", "")
+                v = string.gsub(v, "^(%d+)", "%1 ")
+                v = string.gsub(v, "^(%d+)%s*", "%1 ")
+
+                local stringWithNoNumber = string.gsub(v, "^(%d+)%s*", "")
+                stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
+                local filetype = string.match(file, "%.([^.]+)$")
+
+                if filetype == "md" then
+                    -- Oh god regex is so ugly
+                    -- Lua uses % not \ for escaping
+                    if string.find(stringWithNoNumber, "^-%s%[ ]") then
+                        local todoComment = "%s %s"
+                        v = string.format(todoComment, v, file)
+                        table.insert(todos, v)
+                    end
+                end
+
                 --TODO: Clean this up, it's ugly as hell
                 if string.find(v, "TODO") then
-                    v = string.gsub(v, "^%s*", "")
-                    v = string.gsub(v, "^(%d+)", "%1 ")
-                    v = string.gsub(v, "^(%d+)%s*", "%1 ")
-
-                    -- Check that v starts with a number then a space then a --
-                    -- Remove the number from the string
-                    local stringWithNoNumber = string.gsub(v, "^(%d+)%s*", "")
-                    -- Remove the whitespace at the start of the string
-                    stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
-                    -- Check the filetype using the file extension
-                    local filetype = string.match(file, "%.([^.]+)$")
-
                     --TODO: implent this
                     -- local commentString = vim.cmd("echo &commentstring")
 
@@ -132,6 +142,34 @@ end
 M.quick_fix_list = function()
     -- Add it to the quickfix list gurlll
     local todos = M.get_todo()
+end
+
+local function todo(prompt_bufnr)
+    local content = require("telescope.actions.state").get_selected_entry(
+        prompt_bufnr
+    )
+
+    require("telescope.actions").close(prompt_bufnr)
+    require("todo-me-daddy").jump_to_todo(content.value)
+end
+
+M.telescope_it = function()
+    require("telescope.pickers").new({}, {
+        prompt_title = "TODO's",
+        finder = require("telescope.finders").new_table({
+            results = require("todo-me-daddy").get_todo(),
+        }),
+        sorter = require("telescope.config").values.generic_sorter({}),
+        attach_mappings = function(_, map)
+            map("i", "<CR>", todo)
+            map("n", "<CR>", todo)
+            return true
+        end,
+    }):find()
+end
+
+M.test = function()
+    print(methods.Get('austin_powers'))
 end
 
 return M
