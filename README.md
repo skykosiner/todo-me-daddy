@@ -1,4 +1,4 @@
-yes, yes, I'm aware that this is a stupid name, but will you shut up man
+Yes, yes, I'm aware that this is a stupid name, but will you shut up man
 
 ## What is todo-me-daddy?
 The whole idea of this plugin is that we as developers leave hundreds, and
@@ -15,7 +15,7 @@ What this plugin does is a few different options:
 **Right now the plugin only outputs to telescope**
 
 ## Current bugs
-## Warninng
+## Warning
 Please refer to the ignore list, as of right now you need something in there otherwise the plugin will error
 ## Setup
 Add this to your `init.vim` (change it depending on what package manger you use)

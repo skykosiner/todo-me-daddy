@@ -1,4 +1,4 @@
-- [x] Igonre folders opition with let
-- [x] Add an option to get to do's from markdown files with - [ ]
+            - [x] Igonre folders opition with let
+- [x] Add an option to get to do's from markdown files with [ ]
 - [ ] Clean up this code
 - [ ] Can telescope live grep

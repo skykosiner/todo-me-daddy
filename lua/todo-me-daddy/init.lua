@@ -133,7 +133,7 @@ function get_current_dir()
     return vim.fn.getcwd()
 end
 
-M.get_todo = function()
+function get_todos()
     fileTable = {}
     local currentDir = get_current_dir()
     files_from_dir(currentDir)
@@ -156,7 +156,6 @@ end
 M.quick_fix_list = function()
     -- Add it to the quickfix list gurlll
     local currentDir = get_current_dir()
-    local todos = M.get_todo(currentDir)
 end
 
 local function todo(prompt_bufnr)
@@ -168,11 +167,11 @@ local function todo(prompt_bufnr)
     require("todo-me-daddy").jump_to_todo(content.value)
 end
 
-M.telescope_it = function()
+M.find_todos = function()
     require("telescope.pickers").new({}, {
         prompt_title = "TODO's",
         finder = require("telescope.finders").new_table({
-            results = require("todo-me-daddy").get_todo(),
+            results = get_todos(),
         }),
         sorter = require("telescope.config").values.generic_sorter({}),
         attach_mappings = function(_, map)
@@ -184,12 +183,13 @@ M.telescope_it = function()
 end
 
 M.complete_markdown_todo = function()
-    local currentLineNumber = vim.fn.line(".")
-    local currentFile = vim.fn.expand("%:p")
+    local currentLine = vim.fn.getline(".")
 
-    vim.cmd(":e " .. currentFile)
-    vim.cmd(":" .. currentLineNumber)
-    vim.cmd(":norm 0f[lxix")
+    if string.find(currentLine, "-%s%[ ]") then
+        vim.cmd(":norm! ^ci[x")
+    else
+        vim.cmd(":norm! ^ci[ ")
+    end
 end
 
 M.test = function()
