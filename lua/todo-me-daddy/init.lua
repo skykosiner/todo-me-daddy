@@ -30,6 +30,7 @@ function files_from_dir(dir)
         -- Get each file from the ignore list, you can find info on this in the
         -- README (by default the progarm ignores node_modules, and right now
         -- if you change that 0 to do's wil be found)
+
         for k,v in pairs(methods.Get('ignore_folders')) do
             if string.find(f, v) then
                 break
@@ -37,6 +38,7 @@ function files_from_dir(dir)
                 table.insert(fileTable, f)
             end
         end
+        -- error("Go back and read the readme, smh. Hint it is the ignore_folders option")
     end
 end
 
