@@ -1,10 +1,13 @@
 local actions = require('telescope.actions')
 local methods = require('todo-me-daddy.methods')
 local settings = require('todo-me-daddy.settings')
+local utils = require("todo-me-daddy.utils")
+local files = require("todo-me-daddy.files")
 
 local homeDir = os.getenv("HOME")
 local fileTable = {}
-local utils = require("todo-me-daddy.utils")
+local ignore = methods.Get("ignore_folders")
+-- Print the type of ignore
 
 function os.capture(cmd, raw)
   local f = assert(io.popen(cmd, 'r'))
@@ -24,9 +27,15 @@ function files_from_dir(dir)
     -- Get each item, split by new line, and insert it into the table fileTable
     local s = " "
     for f in string.gmatch(files, "([^" .. s .. "]+)") do
-        -- If the string has node_modules in it then skip, as we don't want any gosh darn node_modules
-        if not string.find(f, "node_modules") then
-            table.insert(fileTable, f)
+        -- Get each file from the ignore list, you can find info on this in the
+        -- README (by default the progarm ignores node_modules, and right now
+        -- if you change that 0 to do's wil be found)
+        for k,v in pairs(methods.Get('ignore_folders')) do
+            if string.find(f, v) then
+                break
+            else
+                table.insert(fileTable, f)
+            end
         end
     end
 end
@@ -65,16 +74,17 @@ function get_todo_comments()
                 stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
                 local filetype = string.match(file, "%.([^.]+)$")
 
-                if filetype == "md" then
-                    -- Oh god regex is so ugly
-                    -- Lua uses % not \ for escaping
-                    if string.find(stringWithNoNumber, "^-%s%[ ]") then
-                        local todoComment = "%s %s"
-                        v = string.format(todoComment, v, file)
-                        table.insert(todos, v)
+                if not methods.Get("get_markdown_todo") == false then
+                    if filetype == "md" then
+                        -- Oh god regex is so ugly
+                        -- Lua uses % not \ for escaping
+                        if string.find(stringWithNoNumber, "^-%s%[ ]") then
+                            local todoComment = "%s %s"
+                            v = string.format(todoComment, v, file)
+                            table.insert(todos, v)
+                        end
                     end
                 end
-
                 --TODO: Clean this up, it's ugly as hell
                 if string.find(v, "TODO") then
                     --TODO: implent this
@@ -130,6 +140,10 @@ M.get_todo = function()
     return get_todo_comments()
 end
 
+M.get_todo_github = function()
+    files.get_git_files()
+end
+
 M.jump_to_todo = function(todo)
     local lineNum = string.match(todo, "%d+")
     todo = string.sub(todo, string.find(todo, homeDir) + 1)
@@ -141,7 +155,8 @@ end
 --TODO: Add a way to jump to the file and line number, with quckfixlist
 M.quick_fix_list = function()
     -- Add it to the quickfix list gurlll
-    local todos = M.get_todo()
+    local currentDir = get_current_dir()
+    local todos = M.get_todo(currentDir)
 end
 
 local function todo(prompt_bufnr)
@@ -168,8 +183,17 @@ M.telescope_it = function()
     }):find()
 end
 
+M.complete_markdown_todo = function()
+    local currentLineNumber = vim.fn.line(".")
+    local currentFile = vim.fn.expand("%:p")
+
+    vim.cmd(":e " .. currentFile)
+    vim.cmd(":" .. currentLineNumber)
+    vim.cmd(":norm 0f[lxix")
+end
+
 M.test = function()
-    print(methods.Get('austin_powers'))
+    print(methods.Get("get_markdown_todo"))
 end
 
 return M
