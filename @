@@ -92,16 +92,6 @@ function get_todo_comments()
                     --TODO: implent this
                     -- local commentString = vim.cmd("echo &commentstring")
 
-                    -- if commentString == "--" then
-                    --     local todoComment = "-- %s %s"
-                    --     v = string.format(todoComment, v, file)
-                    --     table.insert(todos, v)
-                    -- else
-                    --     local todoComment = "%s %s"
-                    --     v = string.format(todoComment, v, file)
-                    --     table.insert(todos, v)
-                    -- end
-
                     if filetype == "lua" then
                         if string.find(stringWithNoNumber, "^--TODO") or string.find(stringWithNoNumber, "^-- TODO") then
                             local todoComment = "%s %s"
