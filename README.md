@@ -1,5 +1,7 @@
 Yes, yes, I'm aware that this is a stupid name, but will you shut up man
 
+**This does not work on windows, thanks to windows not being POSIX complaint**
+
 ## What is todo-me-daddy?
 The whole idea of this plugin is that we as developers leave hundreds, and
 hundreds of TODO comments in our code, and there is no way to find them, other
