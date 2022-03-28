@@ -2,3 +2,4 @@
 - [x] Add an option to get to do's from markdown files with [ ]
 - [ ] Clean up this code
 - [ ] Can telescope live grep
+- [ ] Search files that are called TODO.md (get each line as a new items, this will be an option in the settings)
