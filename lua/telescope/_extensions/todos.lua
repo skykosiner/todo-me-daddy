@@ -1,66 +1,40 @@
-local finders = require("telescope.finders")
-local conf = require("telescope.config").values
-local entry_display = require("telescope.pickers.entry_display")
-local pickers = require("telescope.pickers")
-local utils = require("todo-me-daddy.utils")
+local utils = require "todo-me-daddy.utils"
+local preview = require("telescope.previewers")
+local files   = require("todo-me-daddy.files")
 
-local function filter_empty_string(list)
-    local next = {}
-    for idx = 1, #list do
-        if list[idx].filename ~= "" then
-            table.insert(next, list[idx])
-        end
-    end
+local homeDir = os.getenv("HOME")
 
-    return next
+
+local function navigate_to_todo(prompt_bufnr)
+    local content = require("telescope.actions.state").get_selected_entry(prompt_bufnr)
+    require("telescope.actions").close(prompt_bufnr)
+
+    local lineNum = string.match(content.value, "%d+")
+    local path = string.sub(content.value, string.find(content.value, homeDir) + 1)
+    path = "/" .. path
+
+    -- TODO: maybe implent the fancy vim.api.nvim_win_set_cursor(), but for now this works
+    vim.cmd("e " .. path)
+    vim.cmd(":" .. lineNum)
+
 end
 
-
-local generate_new_finder = function()
-    return finders.new_table({
-        results = filter_empty_string(utils.get_todos()),
-        entry_maker = function(entry)
-            print(entry
-            for k,v in pairs(entry) do
-                print(v)
-            end
-            local line = entry.file .. ":" .. entry.line .. "-" .. entry.value
-            local displayer = entry_display.create({
-                separator = " - ",
-                items = {
-                    { width = 2 },
-                    { width = 50 },
-                    { remaining = true },
-                },
-            })
-            local make_display = function(entry)
-                return displayer({
-                    tostring(entry.index),
-                    line,
-                })
-            end
-            local line = entry.filename .. ":" .. entry.row .. ":" .. entry.col
-            return {
-                value = entry,
-                ordinal = line,
-                display = make_display,
-                lnum = entry.row,
-                col = entry.col,
-                filename = entry.filename,
-            }
-        end,
-    })
-end
+-- TODO: add a thing to get the preview of the to do file
+-- local function TodoPreview(opts)
+-- end
 
 return function(opts)
     opts = opts or {}
 
-    pickers.new(opts, {
-        prompt_title = "harpoon marks",
-        finder = generate_new_finder(),
-        sorter = conf.generic_sorter(opts),
-        previewer = conf.grep_previewer(opts),
+    require("telescope.pickers").new(opts, {
+        prompt_title = "Todo's",
+        finder = require("telescope.finders").new_table({
+            results = utils:get_todos()
+        }),
+        sorter = require("telescope.config").values.generic_sorter({}),
         attach_mappings = function(_, map)
+            map("i", "<CR>", navigate_to_todo)
+            map("n","<CR>",  navigate_to_todo)
             return true
         end,
     }):find()

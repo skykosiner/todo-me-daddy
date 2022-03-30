@@ -6,33 +6,17 @@ local files = require("todo-me-daddy.files")
 local actions = require('telescope.actions')
 local conf = require("telescope.config").values
 
+local has_telescope = pcall(require, "telescope")
 
-local ignore = methods.Get("ignore_folders")
-
-function os.capture(cmd, raw)
-  local f = assert(io.popen(cmd, 'r'))
-  local s = assert(f:read('*a'))
-  f:close()
-  if raw then return s end
-  s = string.gsub(s, '^%s+', '')
-  s = string.gsub(s, '%s+$', '')
-  s = string.gsub(s, '[\n\r]+', ' ')
-  return s
+if not has_telescope then
+  error("This plugin requires telescope.nvim (https://github.com/nvim-telescope/telescope.nvim)")
 end
 
 local M = {
     setup = methods.Setup,
 }
 
-M.get_todo_gIthub = function()
-    files.get_git_files()
-end
-
 --TODO: Add a way to jump to the file and line number, with quckfixlist
-M.quick_fix_list = function()
-    -- Add it to the quickfix list gurlll
-    local currentDir = get_current_dir()
-end
 
 M.complete_markdown_todo = function()
     local currentLine = vim.fn.getline(".")

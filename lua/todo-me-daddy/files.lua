@@ -4,7 +4,27 @@ local files = {
     fileTable = {},
 }
 
+function os.capture(cmd, raw)
+  local f = assert(io.popen(cmd, 'r'))
+  local s = assert(f:read('*a'))
+  f:close()
+  if raw then return s end
+  s = string.gsub(s, '^%s+', '')
+  s = string.gsub(s, '%s+$', '')
+  s = string.gsub(s, '[\n\r]+', ' ')
+  return s
+end
+
 function files:files_from_dir(dir)
+    -- Get the length of the fileTable
+    local size = 0
+    for _ in pairs(files.fileTable) do size = size + 1 end
+
+    -- Empty the table
+    if size > 0 then
+        files.fileTable = {}
+    end
+
     -- Find each file in the current dir, sorry windows users this only works on posix complaint shells (fuck you windows)
     local filesFound = os.capture("find " .. dir)
 
@@ -36,9 +56,9 @@ function files:get_line_from_file(file)
     return lines
 end
 
-function files:get_git_files(dir)
-    local files = os.execute("cd %s && git ls-files --exclude-standard --cached", dir)
-    print(files)
+function files:get_git_files()
+    local files = os.execute("git ls-files --exclude-standard --cached")
+    vim.inspect(files)
 end
 
 return files

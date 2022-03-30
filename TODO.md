@@ -2,3 +2,4 @@
 - [x] Add an option to get to do's from markdown files with [ ]
 - [ ] Clean up this code
 - [ ] Can telescope live grep
+- [ ] Get to do's which are "asgined" to you, you will enter your name in the config file

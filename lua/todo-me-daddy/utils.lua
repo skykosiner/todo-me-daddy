@@ -8,6 +8,9 @@ local utils = {
 local homeDir = os.getenv("HOME")
 
 function utils:get_todo_comments()
+    -- Each time we run this, we need to clear the table
+    -- This is because we are running this function multiple times
+    -- and we don't want to add the same comments multiple times
     for k,v in pairs(files.fileTable) do
         local file = v
         -- Make sure that the file is not a dir
@@ -24,34 +27,23 @@ function utils:get_todo_comments()
 
                 if not methods.Get("get_markdown_todo") == false then
                     if filetype == "md" then
-                        local lineNum = string.match(v, "%d+")
                         -- Oh god regex is so ugly
                         -- Lua uses % not \ for escaping
                         if string.find(stringWithNoNumber, "^-%s%[ ]") then
-                            local todoTable = {
-                                file = file,
-                                line = lineNum,
-                                value = v
-                            }
-                            utils:add_todo_to_table(file, todoTable)
+                            local todoComment = "%s %s"
+                            v = string.format(todoComment, v, file)
+                            table.insert(utils.todos, v)
                         end
                     end
                 end
                 --TODO: Clean this up, it's ugly as hell
                 if string.find(v, "TODO") then
-                    local lineNum = string.match(v, "%d+")
                     --TODO: implent this
                     -- local commentString = vim.cmd("echo &commentstring")
 
                     if filetype == "lua" then
                         if string.find(stringWithNoNumber, "^--TODO") or string.find(stringWithNoNumber, "^-- TODO") then
-                            local todoTable = {
-                                file = file,
-                                line = lineNum,
-                                value = v,
-                            }
-
-                            utils:add_todo_to_table(file, todoTable)
+                            utils:add_todo_to_table(file, v)
                         end
                     elseif filetype == "js" or filetype == "ts" or filetype == "go" or filetype == "c" then
                         if string.find(stringWithNoNumber, "^//TODO") or string.find(stringWithNoNumber, "^// TODO") then
@@ -104,7 +96,8 @@ end
 function utils:get_todos()
     local currentDir = utils:get_current_dir()
     files:files_from_dir(currentDir)
-    return utils:get_todo_comments()
+    local todosToReturn = utils:get_todo_comments()
+    return todosToReturn
 end
 
 function utils:add_todo_to_table(file, todo)
