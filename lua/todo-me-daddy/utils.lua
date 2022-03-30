@@ -10,7 +10,8 @@ local homeDir = os.getenv("HOME")
 function utils:get_todo_comments()
     -- Each time we run this, we need to clear the table
     -- This is because we are running this function multiple times
-    -- and we don't want to add the same comments multiple times
+    -- and we don't want to add the same things multiple times
+    utils.todos = {}
     for k,v in pairs(files.fileTable) do
         local file = v
         -- Make sure that the file is not a dir

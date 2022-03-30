@@ -16,14 +16,7 @@ function os.capture(cmd, raw)
 end
 
 function files:files_from_dir(dir)
-    -- Get the length of the fileTable
-    local size = 0
-    for _ in pairs(files.fileTable) do size = size + 1 end
-
-    -- Empty the table
-    if size > 0 then
-        files.fileTable = {}
-    end
+    files.fileTable = {}
 
     -- Find each file in the current dir, sorry windows users this only works on posix complaint shells (fuck you windows)
     local filesFound = os.capture("find " .. dir)
