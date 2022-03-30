@@ -25,9 +25,16 @@ Add this to your `init.vim` (change it depending on what package manger you use)
 Plug 'yonikosiner/todo-me-daddy'
 ```
 
+In your `telescope.lua` add:
+
+```lua
+require("telescope").load_extension('todo_me_daddy')
+```
+
 Then where you set your remaps add this
 ```vim
-nnoremap <leader>td :lua require('todo-me-daddy').find_todos()<CR>
+" We have to call the telescope exteion todo_me_daddy not todo-me-daddy, as lua goes mad at as if we use - in the string below
+nnoremap <leader>td :lua require('telescope').extensions.todo_me_daddy.todos()<CR>
 " This will allow you to be on the line of a markdown to do and complete with a keybinding of your choice
 nnoremap <leader>m :lua require("todo-me-daddy").complete_markdown_todo()<CR>
 ```
