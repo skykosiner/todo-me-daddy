@@ -9,7 +9,7 @@ local conf = require("telescope.config").values
 local has_telescope = pcall(require, "telescope")
 
 if not has_telescope then
-  error("This plugin requires telescope.nvim (https://github.com/nvim-telescope/telescope.nvim)")
+    error("This plugin requires telescope.nvim (https://github.com/nvim-telescope/telescope.nvim)")
 end
 
 local M = {

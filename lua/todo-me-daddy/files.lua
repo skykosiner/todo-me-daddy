@@ -5,14 +5,14 @@ local files = {
 }
 
 function os.capture(cmd, raw)
-  local f = assert(io.popen(cmd, 'r'))
-  local s = assert(f:read('*a'))
-  f:close()
-  if raw then return s end
-  s = string.gsub(s, '^%s+', '')
-  s = string.gsub(s, '%s+$', '')
-  s = string.gsub(s, '[\n\r]+', ' ')
-  return s
+    local f = assert(io.popen(cmd, 'r'))
+    local s = assert(f:read('*a'))
+    f:close()
+    if raw then return s end
+    s = string.gsub(s, '^%s+', '')
+    s = string.gsub(s, '%s+$', '')
+    s = string.gsub(s, '[\n\r]+', ' ')
+    return s
 end
 
 function files:files_from_dir(dir)
@@ -40,6 +40,10 @@ function files:files_from_dir(dir)
 end
 
 function files:get_line_from_file(file)
+    -- Check if the file contains spaces if so ignore it
+    --if not string.find(file, "/^\s+$/") then
+    --end
+
     local lines = {}
     -- Read each file and split by new line, and insert it into the table fileTable (include line numbers)
     for line in io.lines(file) do
