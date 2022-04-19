@@ -1,6 +1,9 @@
-local utils = require "todo-me-daddy.utils"
-local preview = require("telescope.previewers")
-local files   = require("todo-me-daddy.files")
+local utils         = require "todo-me-daddy.utils"
+local preview       = require("telescope.previewers")
+local files         = require("todo-me-daddy.files")
+local conf          = require("telescope.config").values
+local finders       = require("telescope.finders")
+local entry_display = require("telescope.pickers.entry_display")
 
 local homeDir = os.getenv("HOME")
 
@@ -19,6 +22,37 @@ local function navigate_to_todo(prompt_bufnr)
 
 end
 
+local generate_new_finder = function(todos)
+    return finders.new_table({
+        entry_maker = function()
+            local line = todos.filename .. ":" .. todos.row .. ":" .. todos.col
+            local displayer = entry_display.create({
+                separator = " - ",
+                items = {
+                    { width = 2 },
+                    { width = 50 },
+                    { remaining = true },
+                },
+            })
+            local make_display = function(entry)
+                return displayer({
+                    tostring(entry.index),
+                    line,
+                })
+            end
+            local line = todos.filename .. ":" .. todos.row .. ":" .. todos.col
+            return {
+                value = todos,
+                ordinal = line,
+                display = make_display,
+                lnum = todos.row,
+                col = todos.col,
+                filename = todos.filename,
+            }
+        end,
+    })
+end
+
 -- TODO: add a thing to get the preview of the to do file
 -- local function TodoPreview(opts)
 -- end
@@ -28,13 +62,12 @@ return function(opts)
 
     require("telescope.pickers").new(opts, {
         prompt_title = "Todo's",
-        finder = require("telescope.finders").new_table({
-            results = utils:get_todos()
-        }),
+        previewer = require("telescope.previewers").cat.new(opts),
+        finder = generate_new_finder(utils:get_todos()),
         sorter = require("telescope.config").values.generic_sorter({}),
         attach_mappings = function(_, map)
             map("i", "<CR>", navigate_to_todo)
-            map("n","<CR>",  navigate_to_todo)
+            map("n", "<CR>", navigate_to_todo)
             return true
         end,
     }):find()

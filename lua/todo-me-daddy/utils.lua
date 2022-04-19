@@ -12,12 +12,12 @@ function utils:get_todo_comments()
     -- This is because we are running this function multiple times
     -- and we don't want to add the same things multiple times
     utils.todos = {}
-    for k,v in pairs(files.fileTable) do
+    for k, v in pairs(files.fileTable) do
         local file = v
         -- Make sure that the file is not a dir
         if utils:file_not_dir(file) then
             local lines = files:get_line_from_file(file)
-            for k,v in pairs(lines) do
+            for k, v in pairs(lines) do
                 v = string.gsub(v, "^%s*", "")
                 v = string.gsub(v, "^(%d+)", "%1 ")
                 v = string.gsub(v, "^(%d+)%s*", "%1 ")
@@ -51,7 +51,7 @@ function utils:get_todo_comments()
                             utils:add_todo_to_table(file, v)
                         end
                     elseif filetype == "sh" or filetype == "py" then
-                        if string.find(stringWithNoNumber, "^#TODO")  or string.find(stringWithNoNumber, "^# TODO") then
+                        if string.find(stringWithNoNumber, "^#TODO") or string.find(stringWithNoNumber, "^# TODO") then
                             utils:add_todo_to_table(file, v)
                         end
                     elseif filetype == "" or filetype == nil then
@@ -72,14 +72,14 @@ function utils:get_todo_comments()
 end
 
 function utils:exists(file)
-   local ok, err, code = os.rename(file, file)
-   if not ok then
-      if code == 13 then
-         -- Permission denied, but it exists
-         return true
-      end
-   end
-   return ok, err
+    local ok, err, code = os.rename(file, file)
+    if not ok then
+        if code == 13 then
+            -- Permission denied, but it exists
+            return true
+        end
+    end
+    return ok, err
 end
 
 function utils:file_not_dir(name)
@@ -98,21 +98,21 @@ function utils:get_todos()
     local currentDir = utils:get_current_dir()
     files:files_from_dir(currentDir)
     local todosToReturn = utils:get_todo_comments()
+    for k,v in pairs(todosToReturn) do
+        print(v)
+    end
     return todosToReturn
 end
 
 function utils:add_todo_to_table(file, todo)
-    local todoComment = "%s %s"
-    todo = string.format(todoComment, todo, file)
-    table.insert(utils.todos, todo)
-end
+    local finalTodo = {
+        line = string.match(todo, "%d+"),
+        col = "0",
+        file = file,
+        content = todo
+    }
 
-function utils:jump_to_todo(todo)
-    local lineNum = string.match(todo, "%d+")
-    todo = string.sub(todo, string.find(todo, homeDir) + 1)
-    todo = "/" .. todo
-    vim.cmd("e " .. todo)
-    vim.cmd(":" .. lineNum)
+    table.insert(utils.todos, finalTodo)
 end
 
 return utils

@@ -5,11 +5,12 @@ Yes, yes, I'm aware that this is a stupid name, but will you shut up man
 ## What is todo-me-daddy?
 The whole idea of this plugin is that we as developers leave hundreds, and
 hundreds of TODO comments in our code, and there is no way to find them, other
+
 then grepping them.
 
 Well this plugin makes the finding of to-do's easy.
 
-What this plugin does is a few different options:
+What this plugin does is a few;, different options:
 1. Output every to-do found to telescope (this can also include to do's found in markdown, by default that option is off)
 2. Key bind to complete a to do in markdown
 3. I have more plans for the future but in order to check them out, check out the [TODO.md](https://github.com/yonikosiner/todo-me-daddy/blob/master/TODO.md)
