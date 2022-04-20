@@ -68,7 +68,9 @@ function utils:get_todo_comments()
         end
     end
 
-    return utils.todos
+    return require("telescope.finders").new_table({
+        utils.todos
+    })
 end
 
 function utils:exists(file)
@@ -98,21 +100,27 @@ function utils:get_todos()
     local currentDir = utils:get_current_dir()
     files:files_from_dir(currentDir)
     local todosToReturn = utils:get_todo_comments()
-    for k,v in pairs(todosToReturn) do
-        print(v)
-    end
     return todosToReturn
 end
 
 function utils:add_todo_to_table(file, todo)
-    local finalTodo = {
-        line = string.match(todo, "%d+"),
-        col = "0",
-        file = file,
-        content = todo
-    }
+    local lineNum = string.match(todo, "%d+")
+    print("lineNum", lineNum)
+    -- local todoComment = "%s %s"
+    -- todo = string.format(todoComment, todo, file)
 
-    table.insert(utils.todos, finalTodo)
+    print("todo", todo)
+
+    local insert = {
+        value = todo,
+        ordinal = todo,
+        -- display = make_display,
+        lnum = lineNum,
+        col = 0,
+        filename = file,
+    }
+    -- table.insert(utils.todos, todo)
+    table.insert(utils.todos, insert)
 end
 
 return utils
