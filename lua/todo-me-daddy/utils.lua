@@ -1,4 +1,5 @@
 local files = require("todo-me-daddy.files")
+local entry_display = require("telescope.pickers.entry_display")
 local methods = require("todo-me-daddy.methods")
 
 local utils = {
@@ -69,7 +70,18 @@ function utils:get_todo_comments()
     end
 
     return require("telescope.finders").new_table({
-        utils.todos
+        results = utils.todos,
+        entry_maker = function(entry)
+
+            return {
+                value = entry,
+                ordinal = entry.ordinal,
+                display = entry.display,
+                lnum = entry.lnum,
+                col = entry.col,
+                filename = entry.filename,
+            }
+        end
     })
 end
 
@@ -105,20 +117,41 @@ end
 
 function utils:add_todo_to_table(file, todo)
     local lineNum = string.match(todo, "%d+")
-    print("lineNum", lineNum)
     -- local todoComment = "%s %s"
     -- todo = string.format(todoComment, todo, file)
 
-    print("todo", todo)
+    local pwd = vim.fn.system("pwd")
+    local currentDir = os.capture("basename " .. pwd)
+    currentDir = currentDir:sub(1, -2)
+    file = vim.fn.fnamemodify(file, ":.")
+
+    local line = file .. ":" .. lineNum .. ":" .. "0"
+
+    local displayer = entry_display.create({
+        separator = " - ",
+        items = {
+            { width = 2 },
+            { width = 50 },
+            { remaining = true },
+        },
+    })
+
+    local make_display = function(entry)
+        return displayer({
+            tostring(entry.index),
+            line,
+        })
+    end
 
     local insert = {
-        value = todo,
-        ordinal = todo,
-        -- display = make_display,
-        lnum = lineNum,
+        value = line,
+        ordinal = line,
+        display = make_display,
+        lnum = tonumber(lineNum),
         col = 0,
         filename = file,
     }
+
     -- table.insert(utils.todos, todo)
     table.insert(utils.todos, insert)
 end

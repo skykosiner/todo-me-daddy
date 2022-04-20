@@ -25,15 +25,17 @@ end
 -- TODO: add a thing to get the preview of the to do file
 
 return function(opts)
-    print(vim.inspect(utils:get_todos()))
+    opts = opts or {}
+
+    -- print("inspect from telescope call", vim.inspect(utils:get_todos()))
     require("telescope.pickers").new(opts, {
         prompt_title = "Todo's",
         finder = utils:get_todos(),
-        -- previewer = require("telescope.config").values.grep_previewer,
-        sorter = require("telescope.config").values.generic_sorter({}),
+        previewer = conf.grep_previewer(opts),
+        sorter = conf.generic_sorter(opts),
         attach_mappings = function(_, map)
-            map("i", "<CR>", navigate_to_todo)
-            map("n", "<CR>", navigate_to_todo)
+            -- map("i", "<CR>", navigate_to_todo)
+            -- map("n", "<CR>", navigate_to_todo)
             return true
         end,
     }):find()
