@@ -6,7 +6,6 @@ end
 
 return telescope.register_extension({
     exports = {
-        -- marks = require("telescope._extensions.marks"),
         todos = require("telescope._extensions.todos"),
     },
 })
