@@ -120,12 +120,9 @@ function utils:add_todo_to_table(file, todo)
     -- local todoComment = "%s %s"
     -- todo = string.format(todoComment, todo, file)
 
-    local pwd = vim.fn.system("pwd")
-    local currentDir = os.capture("basename " .. pwd)
-    currentDir = currentDir:sub(1, -2)
     file = vim.fn.fnamemodify(file, ":.")
 
-    local line = file .. ":" .. lineNum .. ":" .. "0"
+    local line = todo
 
     local displayer = entry_display.create({
         separator = " - ",
