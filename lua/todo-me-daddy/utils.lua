@@ -17,6 +17,7 @@ function utils:get_todo_comments(name)
     -- Each time we run this, we need to clear the table
     -- This is because we are running this function multiple times
     -- and we don't want to add the same things multiple times
+
     utils.todos = {}
     for k, v in pairs(files.fileTable) do
         local file = v
@@ -32,16 +33,30 @@ function utils:get_todo_comments(name)
                 stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
                 local filetype = string.match(file, "%.([^.]+)$")
 
-                if not methods.Get("get_markdown_todo") == false then
-                    if filetype == "md" and string.find(stringWithNoNumber, info(filetype)) then
-                        utils:add_todo_to_table(file, v)
+                if string.isempty(name) then
+                    if not methods.Get("get_markdown_todo") == false then
+                        if filetype == "md" and string.find(stringWithNoNumber, info(filetype)) then
+                            utils:add_todo_to_table(file, v)
+                        end
                     end
                 end
 
                 local searchString = "^" .. info(filetype) .. "TODO"
                 local searchStringTwo = "^" .. info(filetype) .. " TODO"
-                if string.find(stringWithNoNumber, searchString) or string.find(stringWithNoNumber, searchStringTwo) then
-                    utils:add_todo_to_table(file, v)
+
+                if not string.isempty(name) then
+                    local stringTodoSearch = searchString .. "%(" .. name .. "%)"
+                    local stringTodoSearchTwo = searchString .. " %(" .. name .. "%)"
+                    local stringTodoSearchThree = searchStringTwo .. "%(" .. name .. "%)"
+                    local stringTodoSearchFour = searchStringTwo .. " %(" .. name .. "%)"
+
+                    if string.find(stringWithNoNumber, stringTodoSearch) or string.find(stringWithNoNumber, stringTodoSearchTwo) or string.find(stringWithNoNumber, stringTodoSearchThree) or string.find(stringWithNoNumber, stringTodoSearchFour) then
+                        utils:add_todo_to_table(file, v)
+                    end
+                else
+                    if string.find(stringWithNoNumber, searchString) or string.find(stringWithNoNumber, searchStringTwo) then
+                        utils:add_todo_to_table(file, v)
+                    end
                 end
             end
         end
@@ -90,6 +105,7 @@ function utils:get_todos(your_todos)
     if your_todos then
         local currentDir = utils:get_current_dir()
         files:files_from_dir(currentDir)
+
         local name = methods.Get("your_name")
 
         if string.isempty(name) then
