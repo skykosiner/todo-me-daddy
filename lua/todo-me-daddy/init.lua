@@ -20,7 +20,8 @@ if methods.Get("ignore_folders") == nil then
     error("Please make sure that you have at least one folder to be ignored in your config see the README for help (https://github.com/yonikosiner/todo-me-daddy/blob/master/README.md)")
 end
 
---TODO: Add a way to jump to the file and line number, with quckfixlist
+-- TODO: Add a way to jump to the file and line number, with quckfixlist
+-- TODO: Let the user chose git files only
 
 M.complete_markdown_todo = function()
     local currentLine = vim.fn.getline(".")
