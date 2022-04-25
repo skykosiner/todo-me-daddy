@@ -1,6 +1,7 @@
 local files = require("todo-me-daddy.files")
 local entry_display = require("telescope.pickers.entry_display")
 local methods = require("todo-me-daddy.methods")
+local info = require("todo-me-daddy.info")
 
 local utils = {
     todos = {}
@@ -8,10 +9,15 @@ local utils = {
 
 local homeDir = os.getenv("HOME")
 
-function utils:get_todo_comments()
+function string.isempty(s)
+    return s == nil or s == ''
+end
+
+function utils:get_todo_comments(name)
     -- Each time we run this, we need to clear the table
     -- This is because we are running this function multiple times
     -- and we don't want to add the same things multiple times
+
     utils.todos = {}
     for k, v in pairs(files.fileTable) do
         local file = v
@@ -27,42 +33,29 @@ function utils:get_todo_comments()
                 stringWithNoNumber = string.gsub(stringWithNoNumber, "^%s*", "")
                 local filetype = string.match(file, "%.([^.]+)$")
 
-                if not methods.Get("get_markdown_todo") == false then
-                    if filetype == "md" then
-                        -- Oh god regex is so ugly
-                        -- Lua uses % not \ for escaping
-                        if string.find(stringWithNoNumber, "^-%s%[ ]") then
-                            local todoComment = "%s %s"
-                            v = string.format(todoComment, v, file)
-                            table.insert(utils.todos, v)
+                if string.isempty(name) then
+                    if not methods.Get("get_markdown_todo") == false then
+                        if filetype == "md" and string.find(stringWithNoNumber, info(filetype)) then
+                            utils:add_todo_to_table(file, v)
                         end
                     end
                 end
-                --TODO: Clean this up, it's ugly as hell
-                if string.find(v, "TODO") then
-                    --TODO: implent this
-                    -- local commentString = vim.cmd("echo &commentstring")
 
-                    if filetype == "lua" then
-                        if string.find(stringWithNoNumber, "^--TODO") or string.find(stringWithNoNumber, "^-- TODO") then
-                            utils:add_todo_to_table(file, v)
-                        end
-                    elseif filetype == "js" or filetype == "ts" or filetype == "go" or filetype == "c" then
-                        if string.find(stringWithNoNumber, "^//TODO") or string.find(stringWithNoNumber, "^// TODO") then
-                            utils:add_todo_to_table(file, v)
-                        end
-                    elseif filetype == "sh" or filetype == "py" then
-                        if string.find(stringWithNoNumber, "^#TODO") or string.find(stringWithNoNumber, "^# TODO") then
-                            utils:add_todo_to_table(file, v)
-                        end
-                    elseif filetype == "" or filetype == nil then
-                        if string.find(stringWithNoNumber, "^#TODO") or string.find(stringWithNoNumber, "^# TODO") then
-                            utils:add_todo_to_table(file, v)
-                        end
-                    else
-                        if string.find(stringWithNoNumber, "^//TODO") or string.find(stringWithNoNumber, "^// TODO") then
-                            utils:add_todo_to_table(file, v)
-                        end
+                local searchString = "^" .. info(filetype) .. "TODO"
+                local searchStringTwo = "^" .. info(filetype) .. " TODO"
+
+                if not string.isempty(name) then
+                    local stringTodoSearch = searchString .. "%(" .. name .. "%)"
+                    local stringTodoSearchTwo = searchString .. " %(" .. name .. "%)"
+                    local stringTodoSearchThree = searchStringTwo .. "%(" .. name .. "%)"
+                    local stringTodoSearchFour = searchStringTwo .. " %(" .. name .. "%)"
+
+                    if string.find(stringWithNoNumber, stringTodoSearch) or string.find(stringWithNoNumber, stringTodoSearchTwo) or string.find(stringWithNoNumber, stringTodoSearchThree) or string.find(stringWithNoNumber, stringTodoSearchFour) then
+                        utils:add_todo_to_table(file, v)
+                    end
+                else
+                    if string.find(stringWithNoNumber, searchString) or string.find(stringWithNoNumber, searchStringTwo) then
+                        utils:add_todo_to_table(file, v)
                     end
                 end
             end
@@ -108,17 +101,29 @@ function utils:get_current_dir()
     return vim.fn.getcwd()
 end
 
-function utils:get_todos()
-    local currentDir = utils:get_current_dir()
-    files:files_from_dir(currentDir)
-    local todosToReturn = utils:get_todo_comments()
-    return todosToReturn
+function utils:get_todos(your_todos)
+    if your_todos then
+        local currentDir = utils:get_current_dir()
+        files:files_from_dir(currentDir)
+
+        local name = methods.Get("your_name")
+
+        if string.isempty(name) then
+            error("You must have your_name value set in order to call this method")
+        end
+
+        local todosToReturn = utils:get_todo_comments(name)
+        return todosToReturn
+    else
+        local currentDir = utils:get_current_dir()
+        files:files_from_dir(currentDir)
+        local todosToReturn = utils:get_todo_comments("")
+        return todosToReturn
+    end
 end
 
 function utils:add_todo_to_table(file, todo)
     local lineNum = string.match(todo, "%d+")
-    -- local todoComment = "%s %s"
-    -- todo = string.format(todoComment, todo, file)
 
     file = vim.fn.fnamemodify(file, ":.")
 
@@ -128,7 +133,7 @@ function utils:add_todo_to_table(file, todo)
         separator = " - ",
         items = {
             { width = 2 },
-            { width = 50 },
+            { width = 1000 },
             { remaining = true },
         },
     })
