@@ -2,5 +2,5 @@
 - [x] Add an option to get to do's from markdown files with [ ]
 - [x] Clean up this code
 - [x] Can telescope live grep
-- [ ] Get to do's which are "asgined" to you, you will enter your name in the config file
+- [x] Get to do's which are "asgined" to you, you will enter your name in the config file
 - [ ] Check if the file contains a space, if so ignore it

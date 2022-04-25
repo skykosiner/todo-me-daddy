@@ -1,8 +1,4 @@
-local has_telescope, telescope = pcall(require, "telescope")
-
-if not has_telescope then
-    error("todo-me-daddy requires nvim-telescope/telescope.nvim")
-end
+local _, telescope = pcall(require, "telescope")
 
 return telescope.register_extension({
     exports = {

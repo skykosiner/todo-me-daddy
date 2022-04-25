@@ -13,6 +13,15 @@ function string.isempty(s)
     return s == nil or s == ''
 end
 
+function utils:Count(tbl)
+    local count = 0
+    for _ in pairs(tbl) do
+        count = count + 1
+    end
+    return count
+end
+
+
 function utils:get_todo_comments(name)
     -- Each time we run this, we need to clear the table
     -- This is because we are running this function multiple times
