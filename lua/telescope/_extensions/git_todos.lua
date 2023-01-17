@@ -7,7 +7,7 @@ return function(opts)
 
   require("telescope.pickers").new(opts, {
     prompt_title = "Todo's",
-    finder = require("todo-me-daddy").read_lines(false),
+    finder = require("todo-me-daddy").read_lines(true),
     previewer = conf.grep_previewer(opts),
     sorter = conf.generic_sorter(opts),
     attach_mappings = function(_, map)

@@ -56,8 +56,13 @@ local function add_todo_to_table(file, todo)
   table.insert(M.todos, insert)
 end
 
-function M.read_lines()
-  local allFiles = files.find_files()
+function M.read_lines(git)
+  local allFiles
+  if git then
+    allFiles = files.git_find_files()
+  else
+    allFiles = files.find_files()
+  end
 
   for _, file in ipairs(allFiles) do
     if not file:match(".git") then
@@ -65,7 +70,7 @@ function M.read_lines()
       local file_type = string.match(file, "%.([^.]+)$")
       local search_string = string.format("^%sTODO", comment_string[file_type])
       for _, line in ipairs(lines) do
-        -- Regex magick to remove number from start of string
+        -- Regex magic to remove number from start of string
         line = string.gsub(line, "^%s*", "")
         line = string.gsub(line, "^(%d+)", "%1 ")
         line = string.gsub(line, "^(%d+)%s*", "%1 ")
