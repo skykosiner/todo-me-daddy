@@ -1,6 +1,0 @@
-- [x] Igonre folders opition with let
-- [x] Add an option to get to do's from markdown files with [ ]
-- [x] Clean up this code
-- [x] Can telescope live grep
-- [x] Get to do's which are "asgined" to you, you will enter your name in the config file
-- [ ] Check if the file contains a space, if so ignore it
