@@ -64,6 +64,9 @@ function M.read_lines(git)
     allFiles = files.find_files()
   end
 
+  -- Clear the table each time so old todo's that don't exist don't get shown
+  M.todos = {}
+
   for _, file in ipairs(allFiles) do
     if not file:match(".git") then
       local lines = vim.fn.systemlist("cat -n " .. file)

@@ -6,11 +6,20 @@ and have them put into telescope. This plugin allows you to quickly to do that.
 ## Install
 ### Packer
 ```lua
-use "skykosiner/todo-me-daddy"
+use {
+    "skykosiner/todo-me-daddy",
+    requires = {
+        { "nvim-lua/plenary.nvim" },
+        { "nvim-telescope/telescope.nvim" },
+    }
+}
 ```
 ### Plug
 ```vim
-plug "skykosiner/todo-me-daddy"
+Plug "skykosiner/todo-me-daddy"
+" This plugin requires these two plugins
+Plug "nvim-lua/plenary.nvim"
+Plug "nvim-telescope/telescope.nvim"
 ```
 ## Telescope config
 ```lua
