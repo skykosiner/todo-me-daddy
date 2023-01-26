@@ -21,7 +21,7 @@ local function is_git_dir()
 end
 
 function files.find_files()
-  return vim.fn.systemlist("find .")
+  return vim.fn.systemlist("find . | grep -v 'node_modules' | grep -v '.git'")
 end
 
 function files.git_find_files()
